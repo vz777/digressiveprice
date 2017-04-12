@@ -1,13 +1,24 @@
 {if {product attr="id"}}
-
-<div class="row" style="border-top: 1px dotted #a5ced8; border-bottom: 1px dotted #a5ced8; margin-top: 10px;">
+<div class="row">
     <div class="col-md-12">
         <div class="row">
             <div class="col-md-12 title">
                 {intl d="digressiveprice.bo.default" l="Digressive price"}
             </div>
         </div>
-
+    
+        {form name="digressiveprice.create"}
+            {if $form_error}<div class="alert alert-danger">{$form_error_message}</div>{/if}
+        {/form}
+    
+        {form name="digressiveprice.update"}
+            {if $form_error}<div class="alert alert-danger">{$form_error_message}</div>{/if}
+        {/form}
+    
+        {form name="digressiveprice.delete"}
+            {if $form_error}<div class="alert alert-danger">{$form_error_message}</div>{/if}
+        {/form}
+        
         <table class="table table-hover">
             <thead>
                 <tr>
@@ -15,13 +26,12 @@
                     <th>{intl l="To" d="digressiveprice.bo.default"}</th>
                     <th>{intl l="Price w/o taxes" d="digressiveprice.bo.default"}</th>
                     <th>{intl l="Sale price w/o taxes" d="digressiveprice.bo.default"}</th>
-                    <th>{intl l="Add/Update" d="digressiveprice.bo.default"}</th>
-                    <th>{intl l="Remove" d="digressiveprice.bo.default"}</th>
+                    <th colspan="2">&nbsp;</th>
                 </tr>
             </thead>
             <tbody>
                 {* List existing digressive prices for this product *}
-                {loop type="digressive" name="prodDigressivePrices" product_id="{product attr="id"}"}
+                {loop type="digressive" name="prodDigressivePrices" product_id={product attr="id"}}
                 <!-- Update digressive price -->
                 <tr>
                     {form name="digressiveprice.update"}
@@ -36,6 +46,8 @@
                         {form_field form=$form field="productId"}
                         <input type="hidden" name="{$name}" value="{$PRODUCT_ID}">
                         {/form_field}
+    
+                        <input type="hidden" name="product_id" value="{$PRODUCT_ID}">
 
                         <!-- Quantities -->
                         <td>
@@ -50,16 +62,24 @@
                         </td>
 
                         <!-- Prices -->
-                        <td>
-                            {form_field form=$form field="price"}
-                            <input name="{$name}" value="{$PRICE}" class="form-control" type="text" required>
-                            {/form_field}
-                        </td>
-                        <td>
-                            {form_field form=$form field="promo"}
-                            <input name="{$name}" value="{$PROMO_PRICE}" class="form-control" type="text" required>
-                            {/form_field}
-                        </td>
+                        {loop type="currency" name="get-currency-symbol" id=$edit_currency_id backend_context="1"}
+                            <td>
+                                {form_field form=$form field="price"}
+                                <span class="input-group">
+                                    <input name="{$name}" value="{format_number number=$PRICE decimals="2" dec_point='.'}" class="form-control" type="text" required>
+                                    <span class="input-group-addon">{$SYMBOL}</span>
+                                </span>
+                                {/form_field}
+                            </td>
+                            <td>
+                                {form_field form=$form field="promo"}
+                                <span class="input-group">
+                                    <input name="{$name}" value="{format_number number=$PROMO_PRICE decimals="2" dec_point='.'}" class="form-control" type="text" required>
+                                    <span class="input-group-addon">{$SYMBOL}</span>
+                                </span>
+                                {/form_field}
+                            </td>
+                        {/loop}
 
                         <!-- Update -->
                         <td>
@@ -81,6 +101,8 @@
                             {form_field form=$form field="id"}
                             <input type="hidden" name="{$name}" value="{$ID}">
                             {/form_field}
+    
+                            <input type="hidden" name="product_id" value="{$PRODUCT_ID}">
 
                             <button type="submit" title="{intl d='digressiveprice.bo.default' l='Remove'}" class="btn btn-default"><span class="glyphicon glyphicon-trash"></span></button>
                         </form>
@@ -99,7 +121,9 @@
                         {form_field form=$form field="productId"}
                         <input type="hidden" name="{$name}" value="{product attr='id'}">
                         {/form_field}
-
+    
+                        <input type="hidden" name="product_id" value="{product attr='id'}">
+                        
                         <!-- Quantities -->
                         <td>
                             {form_field form=$form field="quantityFrom"}
@@ -113,16 +137,24 @@
                         </td>
 
                         <!-- Prices -->
-                        <td>
-                            {form_field form=$form field="price"}
-                            <input name="{$name}" class="form-control" placeholder="{$label}" type="text" required>
-                            {/form_field}
-                        </td>
-                        <td>
-                            {form_field form=$form field="promo"}
-                            <input name="{$name}" class="form-control" placeholder="{$label}" type="text" required>
-                            {/form_field}
-                        </td>
+                        {loop type="currency" name="get-currency-symbol" id=$edit_currency_id backend_context="1"}
+                            <td>
+                                {form_field form=$form field="price"}
+                                    <span class="input-group">
+                                    <input name="{$name}" class="form-control" placeholder="{$label}" type="text" required>
+                                    <span class="input-group-addon">{$SYMBOL}</span>
+                                </span>
+                                {/form_field}
+                            </td>
+                            <td>
+                                {form_field form=$form field="promo"}
+                                    <span class="input-group">
+                                    <input name="{$name}" class="form-control" placeholder="{$label}" type="text" required>
+                                    <span class="input-group-addon">{$SYMBOL}</span>
+                                </span>
+                                {/form_field}
+                            </td>
+                        {/loop}
 
                         <!-- Submit -->
                         <td>

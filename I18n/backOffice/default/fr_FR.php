@@ -11,6 +11,7 @@ return array(
     'Update' => 'Modifier',
     'Add' => 'Ajouter',
     'Remove' => 'Supprimer',
+    'Digressive Prices' => 'Prix dégressifs',
 
     // Form labels & errors
     'FROM {quantity}' => 'DE {quantité}',

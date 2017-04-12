@@ -23,15 +23,33 @@ class DigressivePrice extends BaseModule
     public function postActivation(ConnectionInterface $con = null)
     {
         parent::postActivation($con);
+
         if (!is_null($con)) {
             $database = new Database($con);
             $database->insertSql(null, array(__DIR__ . '/Config/create.sql'));
         }
     }
 
+    /**
+     * This method is called when a newer version of the plugin is installed
+     *
+     * @param string $currentVersion the current (installed) module version, as defined in the module.xml file
+     * @param string $newVersion the new module version, as defined in the module.xml file
+     * @param ConnectionInterface $con
+     */
+    public function update($currentVersion, $newVersion, ConnectionInterface $con = null)
+    {
+        // Change foreign key configuration
+        if (! is_null($con) && $currentVersion == '2.0') {
+            $database = new Database($con);
+            $database->insertSql(null, array(__DIR__ . '/Config/update-2.0.sql'));
+        }
+    }
+
     public function destroy(ConnectionInterface $con = null, $deleteModuleData = false)
     {
         parent::destroy($con, $deleteModuleData);
+
         if (!is_null($con) && $deleteModuleData === true) {
             $database = new Database($con);
             $database->insertSql(null, array(__DIR__ . '/Config/delete.sql'));

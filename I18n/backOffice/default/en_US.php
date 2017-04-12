@@ -10,6 +10,7 @@ return array(
     'Update' => 'Update',
     'Add' => 'Add',
     'Remove' => 'Remove',
+    'Digressive Prices' => 'Digressive Prices',
 
     // Form labels & errors
     'FROM {quantity}' => 'FROM {quantity}',

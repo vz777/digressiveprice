@@ -2,6 +2,7 @@
 
 namespace DigressivePrice\Controller;
 
+use DigressivePrice\DigressivePrice;
 use Thelia\Controller\Admin\BaseAdminController;
 use Thelia\Core\Security\Resource\AdminResources;
 use Thelia\Core\Security\AccessManager;
@@ -48,17 +49,22 @@ class DigressivePriceController extends BaseAdminController
                 $form->get('quantityTo')->getData()
             );
             $this->dispatch('action.createDigressivePrice', $event);
-
-            return $this->generateRedirectFromRoute(
-                'admin.products.update',
-                array(
-                    'product_id' => $form->get('productId')->getData(),
-                    'current_tab' => 'modules'
-                )
+        } catch (\Exception $ex) {
+            $this->setupFormErrorContext(
+                $this->getTranslator()->trans("Failed to create price slice", [], DigressivePrice::DOMAIN),
+                $this->createStandardFormValidationErrorMessage($ex),
+                $cdpf,
+                $ex
             );
-        } catch (FormValidationException $e) {
-            throw new \Exception($this->createStandardFormValidationErrorMessage($e));
         }
+
+        return $this->generateRedirectFromRoute(
+            'admin.products.update',
+            array(
+                'product_id' => $this->getRequest()->get('product_id'),
+                'current_tab' => 'digressive-prices'
+            )
+        );
     }
 
     /**
@@ -87,18 +93,24 @@ class DigressivePriceController extends BaseAdminController
                 $form->get('quantityFrom')->getData(),
                 $form->get('quantityTo')->getData()
             );
-            $this->dispatch('action.updateDigressivePrice', $event);
 
-            return $this->generateRedirectFromRoute(
-                'admin.products.update',
-                array(
-                    'product_id' => $form->get('productId')->getData(),
-                    'current_tab' => 'modules'
-                )
+            $this->dispatch('action.updateDigressivePrice', $event);
+        } catch (\Exception $ex) {
+            $this->setupFormErrorContext(
+                $this->getTranslator()->trans("Failed to update price slice", [], DigressivePrice::DOMAIN),
+                $this->createStandardFormValidationErrorMessage($ex),
+                $udpf,
+                $ex
             );
-        } catch (FormValidationException $e) {
-            throw new \Exception($this->createStandardFormValidationErrorMessage($e));
         }
+
+        return $this->generateRedirectFromRoute(
+            'admin.products.update',
+            array(
+                'product_id' => $this->getRequest()->get('product_id'),
+                'current_tab' => 'digressive-prices'
+            )
+        );
     }
 
     /**
@@ -121,16 +133,21 @@ class DigressivePriceController extends BaseAdminController
             // Dispatch delete
             $event = new DigressivePriceIdEvent($form->get('id')->getData());
             $this->dispatch('action.deleteDigressivePrice', $event);
-
-            return $this->generateRedirectFromRoute(
-                'admin.products.update',
-                array(
-                    'product_id' => $form->get("productId")->getData(),
-                    'current_tab' => 'modules'
-                )
+        } catch (\Exception $ex) {
+            $this->setupFormErrorContext(
+                $this->getTranslator()->trans("Failed to delete price slice", [], DigressivePrice::DOMAIN),
+                $ex->getMessage(),
+                $ddpf,
+                $ex
             );
-        } catch (FormValidationException $e) {
-            throw new \Exception($this->createStandardFormValidationErrorMessage($e));
         }
+
+        return $this->generateRedirectFromRoute(
+            'admin.products.update',
+            array(
+                'product_id' => $this->getRequest()->get('product_id'),
+                'current_tab' => 'digressive-prices'
+            )
+        );
     }
 }

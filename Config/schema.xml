@@ -3,13 +3,15 @@
     <table name="digressive_price">
         <column name="id" autoIncrement="true" primaryKey="true" required="true" type="INTEGER" />
         <column name="product_id" required="true" type="INTEGER" />
-        <column name="price" required="true" type="FLOAT" />
-        <column name="promo_price" required="true" type="FLOAT" />
+        <column name="price" required="true" scale="6" size="16" type="DECIMAL" defaultValue="0.000000" />
+        <column name="promo_price" required="true" scale="6" size="16" type="DECIMAL" defaultValue="0.000000" />
         <column name="quantity_from" required="true" type="INTEGER" />
         <column name="quantity_to" required="true" type="INTEGER" />
-        <foreign-key foreignTable="product" name="fk_product_digressive">
+
+        <foreign-key foreignTable="product" name="fk_product_digressive" onDelete="CASCADE" onUpdate="RESTRICT">
             <reference local="product_id" foreign="id"/>
         </foreign-key>
     </table>
+
     <external-schema filename="local/config/schema.xml" referenceOnly="true" />
 </database>

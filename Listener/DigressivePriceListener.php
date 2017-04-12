@@ -10,9 +10,11 @@ use DigressivePrice\Model\DigressivePriceQuery;
 use Propel\Runtime\ActiveQuery\Criteria;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Thelia\Action\BaseAction;
+use Thelia\Core\Event\Cart\CartItemDuplicationItem;
 use Thelia\Core\Event\TheliaEvents;
 use Thelia\Core\Event\Cart\CartEvent;
 use Thelia\Core\Event\Product\ProductEvent;
+use Thelia\Model\CartItem;
 use Thelia\Model\ProductPriceQuery;
 
 /**
@@ -26,74 +28,65 @@ class DigressivePriceListener extends BaseAction implements EventSubscriberInter
 {
     public static function getSubscribedEvents()
     {
-        return array(
-            TheliaEvents::BEFORE_DELETEPRODUCT => array("beforeRemoveDigressivePrices", 128),
-            TheliaEvents::CART_ADDITEM => array("itemAddedToCart", 128),
-            TheliaEvents::CART_UPDATEITEM => array("itemAddedToCart", 128),
-            'action.createDigressivePrice' => array("createDigressivePrice", 128),
-            'action.updateDigressivePrice' => array("updateDigressivePrice", 128),
-            'action.deleteDigressivePrice' => array("deleteDigressivePrice", 128));
-    }
+        return [
+            TheliaEvents::CART_ADDITEM        => [ "itemAddedToCart", 128 ],
+            TheliaEvents::CART_UPDATEITEM     => [ "itemAddedToCart", 128 ],
+            TheliaEvents::CART_ITEM_DUPLICATE => [ 'cartItemDuplication', 100],
 
-    /**
-     * @param ProductEvent $event
-     * @throws \Exception
-     * @throws \Propel\Runtime\Exception\PropelException
-     */
-    public function beforeRemoveDigressivePrices(ProductEvent $event)
-    {
-        $productId = $event->getProduct()->getId();
-
-        DigressivePriceQuery::create()
-            ->filterByProductId($productId)
-            ->delete();
+            'action.createDigressivePrice' => [ "createDigressivePrice", 128 ],
+            'action.updateDigressivePrice' => [ "updateDigressivePrice", 128 ],
+            'action.deleteDigressivePrice' => [ "deleteDigressivePrice", 128 ]
+        ];
     }
 
     /**
      * Set the good item's price when added to cart
      *
      * @param CartEvent $event
-     * @throws \Exception
-     * @throws \Propel\Runtime\Exception\PropelException
      */
-    public function itemAddedToCart(CartEvent $event)
+    public function updateCartItemPrice(CartEvent $event)
     {
-        $cartItem = $event->getCartItem();
+        $this->processCartItem($event->getCartItem(), true);
+    }
 
-        // Check if the product has some digressive prices
+    /**
+     * Update cart prices after duplication.
+     *
+     * @param CartItemDuplicationItem $event
+     */
+    public function cartItemDuplication(CartItemDuplicationItem $event)
+    {
+        $this->processCartItem($event->getNewItem(), false);
+    }
 
-        $dpq = DigressivePriceQuery::create()
-            ->findByProductId($cartItem->getProductId());
-
-        if (count($dpq) != 0) {
-
-            // Check if the quantity is into a range
-
-            $dpq = DigressivePriceQuery::create()
+    /**
+     * Process a cart item to apply our price if required.
+     *
+     * @param CartItem $cartItem
+     * @param bool $setDefaultPrice if true, the regular price is set if the quantity doesn't match any slice.
+     */
+    protected function processCartItem(CartItem $cartItem, $setDefaultPrice)
+    {
+        // Check if the quantity is into a range
+        if (null !== $dpq = DigressivePriceQuery::create()
                 ->filterByProductId($cartItem->getProductId())
                 ->filterByQuantityFrom($cartItem->getQuantity(), Criteria::LESS_EQUAL)
                 ->filterByQuantityTo($cartItem->getQuantity(), Criteria::GREATER_EQUAL)
-                ->find();
+                ->findOne()) {
+            // Change cart item's prices with those from the corresponding range
+            $cartItem
+                ->setPrice($dpq->getPrice())
+                ->setPromoPrice($dpq->getPromoPrice())
+                ->save();
+        } elseif ($setDefaultPrice) {
+            // Change cart item's prices with the default one
+            $prices = ProductPriceQuery::create()
+                ->findOneByProductSaleElementsId($cartItem->getProductSaleElementsId());
 
-            if ($dpq->count() === 1) {
-
-                // Change cart item's prices with those from the corresponding range
-                $cartItem
-                    ->setPrice($dpq[0]->getPrice())
-                    ->setPromoPrice($dpq[0]->getPromoPrice())
-                    ->save();
-            } else {
-
-                // Change cart item's prices with the default out of range ones
-
-                $prices = ProductPriceQuery::create()
-                    ->findOneByProductSaleElementsId($cartItem->getProductSaleElementsId());
-
-                $cartItem
-                    ->setPrice($prices->getPrice())
-                    ->setPromoPrice($prices->getPromoPrice())
-                    ->save();
-            }
+            $cartItem
+                ->setPrice($prices->getPrice())
+                ->setPromoPrice($prices->getPromoPrice())
+                ->save();
         }
     }
 

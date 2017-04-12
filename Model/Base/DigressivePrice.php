@@ -67,13 +67,15 @@ abstract class DigressivePrice implements ActiveRecordInterface
 
     /**
      * The value for the price field.
-     * @var        double
+     * Note: this column has a database default value of: '0.000000'
+     * @var        string
      */
     protected $price;
 
     /**
      * The value for the promo_price field.
-     * @var        double
+     * Note: this column has a database default value of: '0.000000'
+     * @var        string
      */
     protected $promo_price;
 
@@ -103,10 +105,24 @@ abstract class DigressivePrice implements ActiveRecordInterface
     protected $alreadyInSave = false;
 
     /**
+     * Applies default values to this object.
+     * This method should be called from the object's constructor (or
+     * equivalent initialization method).
+     * @see __construct()
+     */
+    public function applyDefaultValues()
+    {
+        $this->price = '0.000000';
+        $this->promo_price = '0.000000';
+    }
+
+    /**
      * Initializes internal state of DigressivePrice\Model\Base\DigressivePrice object.
+     * @see applyDefaults()
      */
     public function __construct()
     {
+        $this->applyDefaultValues();
     }
 
     /**
@@ -217,7 +233,7 @@ abstract class DigressivePrice implements ActiveRecordInterface
         }
 
         if (null === $this->getPrimaryKey()
-            || null === $obj->getPrimaryKey()) {
+            || null === $obj->getPrimaryKey())  {
             return false;
         }
 
@@ -367,6 +383,7 @@ abstract class DigressivePrice implements ActiveRecordInterface
      */
     public function getId()
     {
+
         return $this->id;
     }
 
@@ -377,26 +394,29 @@ abstract class DigressivePrice implements ActiveRecordInterface
      */
     public function getProductId()
     {
+
         return $this->product_id;
     }
 
     /**
      * Get the [price] column value.
      *
-     * @return   double
+     * @return   string
      */
     public function getPrice()
     {
+
         return $this->price;
     }
 
     /**
      * Get the [promo_price] column value.
      *
-     * @return   double
+     * @return   string
      */
     public function getPromoPrice()
     {
+
         return $this->promo_price;
     }
 
@@ -407,6 +427,7 @@ abstract class DigressivePrice implements ActiveRecordInterface
      */
     public function getQuantityFrom()
     {
+
         return $this->quantity_from;
     }
 
@@ -417,6 +438,7 @@ abstract class DigressivePrice implements ActiveRecordInterface
      */
     public function getQuantityTo()
     {
+
         return $this->quantity_to;
     }
 
@@ -469,13 +491,13 @@ abstract class DigressivePrice implements ActiveRecordInterface
     /**
      * Set the value of [price] column.
      *
-     * @param      double $v new value
+     * @param      string $v new value
      * @return   \DigressivePrice\Model\DigressivePrice The current object (for fluent API support)
      */
     public function setPrice($v)
     {
         if ($v !== null) {
-            $v = (double) $v;
+            $v = (string) $v;
         }
 
         if ($this->price !== $v) {
@@ -490,13 +512,13 @@ abstract class DigressivePrice implements ActiveRecordInterface
     /**
      * Set the value of [promo_price] column.
      *
-     * @param      double $v new value
+     * @param      string $v new value
      * @return   \DigressivePrice\Model\DigressivePrice The current object (for fluent API support)
      */
     public function setPromoPrice($v)
     {
         if ($v !== null) {
-            $v = (double) $v;
+            $v = (string) $v;
         }
 
         if ($this->promo_price !== $v) {
@@ -560,6 +582,14 @@ abstract class DigressivePrice implements ActiveRecordInterface
      */
     public function hasOnlyDefaultValues()
     {
+            if ($this->price !== '0.000000') {
+                return false;
+            }
+
+            if ($this->promo_price !== '0.000000') {
+                return false;
+            }
+
         // otherwise, everything was equal, so return TRUE
         return true;
     } // hasOnlyDefaultValues()
@@ -585,6 +615,8 @@ abstract class DigressivePrice implements ActiveRecordInterface
     public function hydrate($row, $startcol = 0, $rehydrate = false, $indexType = TableMap::TYPE_NUM)
     {
         try {
+
+
             $col = $row[TableMap::TYPE_NUM == $indexType ? 0 + $startcol : DigressivePriceTableMap::translateFieldName('Id', TableMap::TYPE_PHPNAME, $indexType)];
             $this->id = (null !== $col) ? (int) $col : null;
 
@@ -592,10 +624,10 @@ abstract class DigressivePrice implements ActiveRecordInterface
             $this->product_id = (null !== $col) ? (int) $col : null;
 
             $col = $row[TableMap::TYPE_NUM == $indexType ? 2 + $startcol : DigressivePriceTableMap::translateFieldName('Price', TableMap::TYPE_PHPNAME, $indexType)];
-            $this->price = (null !== $col) ? (double) $col : null;
+            $this->price = (null !== $col) ? (string) $col : null;
 
             $col = $row[TableMap::TYPE_NUM == $indexType ? 3 + $startcol : DigressivePriceTableMap::translateFieldName('PromoPrice', TableMap::TYPE_PHPNAME, $indexType)];
-            $this->promo_price = (null !== $col) ? (double) $col : null;
+            $this->promo_price = (null !== $col) ? (string) $col : null;
 
             $col = $row[TableMap::TYPE_NUM == $indexType ? 4 + $startcol : DigressivePriceTableMap::translateFieldName('QuantityFrom', TableMap::TYPE_PHPNAME, $indexType)];
             $this->quantity_from = (null !== $col) ? (int) $col : null;
@@ -611,6 +643,7 @@ abstract class DigressivePrice implements ActiveRecordInterface
             }
 
             return $startcol + 6; // 6 = DigressivePriceTableMap::NUM_HYDRATE_COLUMNS.
+
         } catch (Exception $e) {
             throw new PropelException("Error populating \DigressivePrice\Model\DigressivePrice object", 0, $e);
         }
@@ -809,6 +842,7 @@ abstract class DigressivePrice implements ActiveRecordInterface
             }
 
             $this->alreadyInSave = false;
+
         }
 
         return $affectedRows;
@@ -1081,24 +1115,12 @@ abstract class DigressivePrice implements ActiveRecordInterface
     {
         $keys = DigressivePriceTableMap::getFieldNames($keyType);
 
-        if (array_key_exists($keys[0], $arr)) {
-            $this->setId($arr[$keys[0]]);
-        }
-        if (array_key_exists($keys[1], $arr)) {
-            $this->setProductId($arr[$keys[1]]);
-        }
-        if (array_key_exists($keys[2], $arr)) {
-            $this->setPrice($arr[$keys[2]]);
-        }
-        if (array_key_exists($keys[3], $arr)) {
-            $this->setPromoPrice($arr[$keys[3]]);
-        }
-        if (array_key_exists($keys[4], $arr)) {
-            $this->setQuantityFrom($arr[$keys[4]]);
-        }
-        if (array_key_exists($keys[5], $arr)) {
-            $this->setQuantityTo($arr[$keys[5]]);
-        }
+        if (array_key_exists($keys[0], $arr)) $this->setId($arr[$keys[0]]);
+        if (array_key_exists($keys[1], $arr)) $this->setProductId($arr[$keys[1]]);
+        if (array_key_exists($keys[2], $arr)) $this->setPrice($arr[$keys[2]]);
+        if (array_key_exists($keys[3], $arr)) $this->setPromoPrice($arr[$keys[3]]);
+        if (array_key_exists($keys[4], $arr)) $this->setQuantityFrom($arr[$keys[4]]);
+        if (array_key_exists($keys[5], $arr)) $this->setQuantityTo($arr[$keys[5]]);
     }
 
     /**
@@ -1110,24 +1132,12 @@ abstract class DigressivePrice implements ActiveRecordInterface
     {
         $criteria = new Criteria(DigressivePriceTableMap::DATABASE_NAME);
 
-        if ($this->isColumnModified(DigressivePriceTableMap::ID)) {
-            $criteria->add(DigressivePriceTableMap::ID, $this->id);
-        }
-        if ($this->isColumnModified(DigressivePriceTableMap::PRODUCT_ID)) {
-            $criteria->add(DigressivePriceTableMap::PRODUCT_ID, $this->product_id);
-        }
-        if ($this->isColumnModified(DigressivePriceTableMap::PRICE)) {
-            $criteria->add(DigressivePriceTableMap::PRICE, $this->price);
-        }
-        if ($this->isColumnModified(DigressivePriceTableMap::PROMO_PRICE)) {
-            $criteria->add(DigressivePriceTableMap::PROMO_PRICE, $this->promo_price);
-        }
-        if ($this->isColumnModified(DigressivePriceTableMap::QUANTITY_FROM)) {
-            $criteria->add(DigressivePriceTableMap::QUANTITY_FROM, $this->quantity_from);
-        }
-        if ($this->isColumnModified(DigressivePriceTableMap::QUANTITY_TO)) {
-            $criteria->add(DigressivePriceTableMap::QUANTITY_TO, $this->quantity_to);
-        }
+        if ($this->isColumnModified(DigressivePriceTableMap::ID)) $criteria->add(DigressivePriceTableMap::ID, $this->id);
+        if ($this->isColumnModified(DigressivePriceTableMap::PRODUCT_ID)) $criteria->add(DigressivePriceTableMap::PRODUCT_ID, $this->product_id);
+        if ($this->isColumnModified(DigressivePriceTableMap::PRICE)) $criteria->add(DigressivePriceTableMap::PRICE, $this->price);
+        if ($this->isColumnModified(DigressivePriceTableMap::PROMO_PRICE)) $criteria->add(DigressivePriceTableMap::PROMO_PRICE, $this->promo_price);
+        if ($this->isColumnModified(DigressivePriceTableMap::QUANTITY_FROM)) $criteria->add(DigressivePriceTableMap::QUANTITY_FROM, $this->quantity_from);
+        if ($this->isColumnModified(DigressivePriceTableMap::QUANTITY_TO)) $criteria->add(DigressivePriceTableMap::QUANTITY_TO, $this->quantity_to);
 
         return $criteria;
     }
@@ -1174,6 +1184,7 @@ abstract class DigressivePrice implements ActiveRecordInterface
      */
     public function isPrimaryKeyNull()
     {
+
         return null === $this->getId();
     }
 
@@ -1197,7 +1208,7 @@ abstract class DigressivePrice implements ActiveRecordInterface
         $copyObj->setQuantityTo($this->getQuantityTo());
         if ($makeNew) {
             $copyObj->setNew(true);
-            $copyObj->setId(null); // this is a auto-increment column, so set to default value
+            $copyObj->setId(NULL); // this is a auto-increment column, so set to default value
         }
     }
 
@@ -1233,7 +1244,7 @@ abstract class DigressivePrice implements ActiveRecordInterface
     public function setProduct(ChildProduct $v = null)
     {
         if ($v === null) {
-            $this->setProductId(null);
+            $this->setProductId(NULL);
         } else {
             $this->setProductId($v->getId());
         }
@@ -1287,6 +1298,7 @@ abstract class DigressivePrice implements ActiveRecordInterface
         $this->quantity_to = null;
         $this->alreadyInSave = false;
         $this->clearAllReferences();
+        $this->applyDefaultValues();
         $this->resetModified();
         $this->setNew(true);
         $this->setDeleted(false);
@@ -1335,6 +1347,7 @@ abstract class DigressivePrice implements ActiveRecordInterface
      */
     public function postSave(ConnectionInterface $con = null)
     {
+
     }
 
     /**
@@ -1353,6 +1366,7 @@ abstract class DigressivePrice implements ActiveRecordInterface
      */
     public function postInsert(ConnectionInterface $con = null)
     {
+
     }
 
     /**
@@ -1371,6 +1385,7 @@ abstract class DigressivePrice implements ActiveRecordInterface
      */
     public function postUpdate(ConnectionInterface $con = null)
     {
+
     }
 
     /**
@@ -1389,6 +1404,7 @@ abstract class DigressivePrice implements ActiveRecordInterface
      */
     public function postDelete(ConnectionInterface $con = null)
     {
+
     }
 
 
@@ -1432,4 +1448,5 @@ abstract class DigressivePrice implements ActiveRecordInterface
 
         throw new BadMethodCallException(sprintf('Call to undefined method: %s.', $name));
     }
+
 }

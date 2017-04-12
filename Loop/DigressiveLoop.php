@@ -2,6 +2,8 @@
 
 namespace DigressivePrice\Loop;
 
+use DigressivePrice\Model\DigressivePrice;
+use Propel\Runtime\ActiveQuery\Criteria;
 use Thelia\Core\Template\Element\BaseI18nLoop;
 use Thelia\Core\Template\Element\PropelSearchLoopInterface;
 use Thelia\Core\Template\Element\LoopResult;
@@ -17,6 +19,8 @@ use Thelia\Model\ProductQuery;
  *
  * @package DigressivePrice\Loop
  * @author Etienne PERRIERE <eperriere@openstudio.fr> - Nexxpix - OpenStudio
+ * @method getProductId()
+ * @method getQuantity()
  */
 class DigressiveLoop extends BaseI18nLoop implements PropelSearchLoopInterface
 {
@@ -24,7 +28,10 @@ class DigressiveLoop extends BaseI18nLoop implements PropelSearchLoopInterface
 
     protected function getArgDefinitions()
     {
-        return new ArgumentCollection(Argument::createIntTypeArgument('product_id'));
+        return new ArgumentCollection(
+            Argument::createIntTypeArgument('product_id'),
+            Argument::createIntTypeArgument('quantity')
+        );
     }
 
     public function buildModelCriteria()
@@ -36,11 +43,19 @@ class DigressiveLoop extends BaseI18nLoop implements PropelSearchLoopInterface
             $search->filterByProductId($productId);
         }
 
+        if (null !== $quantity = $this->getQuantity()) {
+            $search
+                ->filterByQuantityFrom($quantity, Criteria::LESS_EQUAL)
+                ->filterByQuantityTo($quantity, Criteria::GREATER_EQUAL)
+            ;
+        }
+
         return $search;
     }
 
     public function parseResults(LoopResult $loopResult)
     {
+        /** @var DigressivePrice $digressivePrice */
         foreach ($loopResult->getResultDataCollection() as $digressivePrice) {
             $loopResultRow = new LoopResultRow($digressivePrice);
 
@@ -60,14 +75,14 @@ class DigressiveLoop extends BaseI18nLoop implements PropelSearchLoopInterface
             $taxedPromoPrice = $product->getTaxedPromoPrice($taxCountry, $promo);
 
             $loopResultRow
-                    ->set("ID", $digressivePrice->getId())
-                    ->set("PRODUCT_ID", $productId)
-                    ->set("QUANTITY_FROM", $digressivePrice->getQuantityFrom())
-                    ->set("QUANTITY_TO", $digressivePrice->getQuantityTo())
-                    ->set("PRICE", $price)
-                    ->set("PROMO_PRICE", $promo)
-                    ->set("TAXED_PRICE", $taxedPrice)
-                    ->set("TAXED_PROMO_PRICE", $taxedPromoPrice);
+                ->set("ID", $digressivePrice->getId())
+                ->set("PRODUCT_ID", $productId)
+                ->set("QUANTITY_FROM", $digressivePrice->getQuantityFrom())
+                ->set("QUANTITY_TO", $digressivePrice->getQuantityTo())
+                ->set("PRICE", $price)
+                ->set("PROMO_PRICE", $promo)
+                ->set("TAXED_PRICE", $taxedPrice)
+                ->set("TAXED_PROMO_PRICE", $taxedPromoPrice);
 
             $loopResult->addRow($loopResultRow);
         }

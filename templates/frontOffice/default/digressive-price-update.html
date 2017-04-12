@@ -1,0 +1,9 @@
+{set_previous_url ignore_current="1"}
+{
+{loop type="digressive" name="dp" limit=1 product_id={$smarty.get.product_id} quantity={$smarty.get.quantity}}
+    "price":"{format_money number=$PRICE}",
+    "promo_price":"{format_money number=$PROMO_PRICE}",
+    "taxed_price":"{format_money number=$TAXED_PRICE}",
+    "taxed_promo_price":"{format_money number=$TAXED_PROMO_PRICE}"
+{/loop}
+}

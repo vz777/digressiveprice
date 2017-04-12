@@ -1,0 +1,27 @@
+<script>
+    // Update displayed price when quantity is changed.
+    $(function() {
+        $(document).on('change', '#quantity', function() {
+            $.ajax({
+                url: "{url path="/digressive-price-update"}",
+                data: {
+                    quantity: $(this).val(),
+                    product_id: $('#cart_product').val()
+                },
+                dataType: "json",
+                success: function(data) {
+console.log(data);
+                    if (data.price) {
+                        $('#pse-price').html(data.promo_price);
+                        $('#pse-price-old').html(data.price);
+                    }
+                },
+                error: function() {
+                    alert("{intl l='Sorry, something goes wrong,; please try again.'}");
+                }
+            });
+        });
+        
+        $('#quantity').change();
+    });
+</script>

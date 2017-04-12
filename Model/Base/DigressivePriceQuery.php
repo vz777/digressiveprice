@@ -49,15 +49,15 @@ use Propel\Runtime\Exception\PropelException;
  *
  * @method     ChildDigressivePrice findOneById(int $id) Return the first ChildDigressivePrice filtered by the id column
  * @method     ChildDigressivePrice findOneByProductId(int $product_id) Return the first ChildDigressivePrice filtered by the product_id column
- * @method     ChildDigressivePrice findOneByPrice(double $price) Return the first ChildDigressivePrice filtered by the price column
- * @method     ChildDigressivePrice findOneByPromoPrice(double $promo_price) Return the first ChildDigressivePrice filtered by the promo_price column
+ * @method     ChildDigressivePrice findOneByPrice(string $price) Return the first ChildDigressivePrice filtered by the price column
+ * @method     ChildDigressivePrice findOneByPromoPrice(string $promo_price) Return the first ChildDigressivePrice filtered by the promo_price column
  * @method     ChildDigressivePrice findOneByQuantityFrom(int $quantity_from) Return the first ChildDigressivePrice filtered by the quantity_from column
  * @method     ChildDigressivePrice findOneByQuantityTo(int $quantity_to) Return the first ChildDigressivePrice filtered by the quantity_to column
  *
  * @method     array findById(int $id) Return ChildDigressivePrice objects filtered by the id column
  * @method     array findByProductId(int $product_id) Return ChildDigressivePrice objects filtered by the product_id column
- * @method     array findByPrice(double $price) Return ChildDigressivePrice objects filtered by the price column
- * @method     array findByPromoPrice(double $promo_price) Return ChildDigressivePrice objects filtered by the promo_price column
+ * @method     array findByPrice(string $price) Return ChildDigressivePrice objects filtered by the price column
+ * @method     array findByPromoPrice(string $promo_price) Return ChildDigressivePrice objects filtered by the promo_price column
  * @method     array findByQuantityFrom(int $quantity_from) Return ChildDigressivePrice objects filtered by the quantity_from column
  * @method     array findByQuantityTo(int $quantity_to) Return ChildDigressivePrice objects filtered by the quantity_to column
  *
@@ -220,6 +220,7 @@ abstract class DigressivePriceQuery extends ModelCriteria
      */
     public function filterByPrimaryKey($key)
     {
+
         return $this->addUsingAlias(DigressivePriceTableMap::ID, $key, Criteria::EQUAL);
     }
 
@@ -232,6 +233,7 @@ abstract class DigressivePriceQuery extends ModelCriteria
      */
     public function filterByPrimaryKeys($keys)
     {
+
         return $this->addUsingAlias(DigressivePriceTableMap::ID, $keys, Criteria::IN);
     }
 
@@ -619,16 +621,16 @@ abstract class DigressivePriceQuery extends ModelCriteria
      */
      public function delete(ConnectionInterface $con = null)
      {
-         if (null === $con) {
-             $con = Propel::getServiceContainer()->getWriteConnection(DigressivePriceTableMap::DATABASE_NAME);
-         }
+        if (null === $con) {
+            $con = Propel::getServiceContainer()->getWriteConnection(DigressivePriceTableMap::DATABASE_NAME);
+        }
 
-         $criteria = $this;
+        $criteria = $this;
 
         // Set the correct dbName
         $criteria->setDbName(DigressivePriceTableMap::DATABASE_NAME);
 
-         $affectedRows = 0; // initialize var to track total num of affected rows
+        $affectedRows = 0; // initialize var to track total num of affected rows
 
         try {
             // use transaction because $criteria could contain info
@@ -636,7 +638,7 @@ abstract class DigressivePriceQuery extends ModelCriteria
             $con->beginTransaction();
 
 
-            DigressivePriceTableMap::removeInstanceFromPool($criteria);
+        DigressivePriceTableMap::removeInstanceFromPool($criteria);
 
             $affectedRows += ModelCriteria::delete($con);
             DigressivePriceTableMap::clearRelatedInstancePool();
@@ -647,5 +649,6 @@ abstract class DigressivePriceQuery extends ModelCriteria
             $con->rollBack();
             throw $e;
         }
-     }
+    }
+
 } // DigressivePriceQuery

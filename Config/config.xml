@@ -16,10 +16,11 @@
 
     <hooks>
         <hook id="digressiveprice.hook" class="DigressivePrice\Hook\DigressivePriceHook" scope="request">
-            <tag name="hook.event_listener" event="product.tab-content" type="back"/>
+            <tag name="hook.event_listener" event="product.tab" type="back"/>
+            <tag name="hook.event_listener" event="product.javascript-initialization" type="front"/>
         </hook>
     </hooks>
-    
+
     <services>
         <service id="digressiveprice.listener" class="DigressivePrice\Listener\DigressivePriceListener" scope="request">
             <argument type="service" id="request"/>
