@@ -7,7 +7,7 @@ SET FOREIGN_KEY_CHECKS = 0;
 -- digressive_price
 -- ---------------------------------------------------------------------
 
-CREATE TABLE `digressive_price`
+CREATE TABLE IF NOT EXISTS `digressive_price`
 (
     `id` INTEGER NOT NULL AUTO_INCREMENT,
     `product_id` INTEGER NOT NULL,
