@@ -37,4 +37,12 @@ class DigressivePriceHook extends BaseHook
         );
     }
 
+
+    public function onCategoryJavascriptInitialization(HookRenderEvent $event)
+    {
+        $event->add(
+            $this->render('digressive-price-update-js.html')
+        );
+    }
+
 }

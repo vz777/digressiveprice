@@ -18,6 +18,7 @@
         <hook id="digressiveprice.hook" class="DigressivePrice\Hook\DigressivePriceHook" scope="request">
             <tag name="hook.event_listener" event="product.tab" type="back"/>
             <tag name="hook.event_listener" event="product.javascript-initialization" type="front"/>
+            <tag name="hook.event_listener" event="category.javascript-initialization" type="front"/>
         </hook>
     </hooks>
 

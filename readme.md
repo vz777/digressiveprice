@@ -44,12 +44,7 @@ Once created, you have to integrate it to you front office thanks to the loop de
 
 The price will be automatically updated according to the product's quantity in the user's cart.
 
-
-## Hook
-
-This module is only hooked into the Modules tab of the products.
-The Hook used is called "product.tab-content".
-
+On the product page, the product price is updated according to selected quantity. 
 
 ## Loop
 
@@ -60,6 +55,7 @@ The Hook used is called "product.tab-content".
 |Argument |Description |
 |---      |--- |
 |**product_id** | The ID of the product to get digressive prices. Example: "product_id=3" |
+|**quantity** | The required prodiutct quantity Example: "quantity=12" |
 
 ### Output arguments
 
@@ -123,8 +119,3 @@ This example displays the product prices according to all the quantity's ranges
     {/loop}
 </table>
 ```
-
-## Other ?
-
-As you can see in the example, you can use a high value to manage the last range.
-Feel free to use some JavaScript to refresh new price information while changing the selected quantity.

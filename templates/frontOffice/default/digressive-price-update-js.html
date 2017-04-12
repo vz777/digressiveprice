@@ -1,19 +1,33 @@
 <script>
     // Update displayed price when quantity is changed.
     $(function() {
+        function updateDisplayedPrice(price, oldPrice) {
+            if ($('#pse-price-old').text() != '') {
+                // Le produit est en promo
+                $('#pse-price').html(price);
+                $('#pse-price-old').html(oldPrice);
+            } else {
+                $('#pse-price').html(price);
+            }
+        }
+        
         $(document).on('change', '#quantity', function() {
+            var $form = $(this).closest('form');
             $.ajax({
                 url: "{url path="/digressive-price-update"}",
                 data: {
                     quantity: $(this).val(),
-                    product_id: $('#cart_product').val()
+                    product_id: $('#cart_product', $form).val()
                 },
                 dataType: "json",
                 success: function(data) {
-console.log(data);
-                    if (data.price) {
-                        $('#pse-price').html(data.promo_price);
-                        $('#pse-price-old').html(data.price);
+                    if (data.is_promo) {
+                        // Le produit est en promo
+                        $('#pse-price').html(data.taxed_promo_price);
+                        $('#pse-price-old').html(data.taxed_price);
+                    } else {
+                        $('#pse-price').html(data.taxed_price);
+                        $('#pse-price-old').html('');
                     }
                 },
                 error: function() {
