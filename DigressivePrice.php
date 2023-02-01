@@ -12,6 +12,7 @@
 
 namespace DigressivePrice;
 
+use Symfony\Component\DependencyInjection\Loader\Configurator\ServicesConfigurator;
 use Thelia\Module\BaseModule;
 use Propel\Runtime\Connection\ConnectionInterface;
 use Thelia\Install\Database;
@@ -20,7 +21,7 @@ class DigressivePrice extends BaseModule
 {
     const DOMAIN = 'digressiveprice';
 
-    public function postActivation(ConnectionInterface $con = null)
+    public function postActivation(ConnectionInterface $con = null): void
     {
         parent::postActivation($con);
 
@@ -37,7 +38,7 @@ class DigressivePrice extends BaseModule
      * @param string $newVersion the new module version, as defined in the module.xml file
      * @param ConnectionInterface $con
      */
-    public function update($currentVersion, $newVersion, ConnectionInterface $con = null)
+    public function update($currentVersion, $newVersion, ConnectionInterface $con = null): void
     {
         // Change foreign key configuration
         if (! is_null($con) && $currentVersion == '2.0') {
@@ -46,7 +47,7 @@ class DigressivePrice extends BaseModule
         }
     }
 
-    public function destroy(ConnectionInterface $con = null, $deleteModuleData = false)
+    public function destroy(ConnectionInterface $con = null, $deleteModuleData = false): void
     {
         parent::destroy($con, $deleteModuleData);
 
@@ -54,5 +55,13 @@ class DigressivePrice extends BaseModule
             $database = new Database($con);
             $database->insertSql(null, array(__DIR__ . '/Config/delete.sql'));
         }
+    }
+
+    public static function configureServices(ServicesConfigurator $servicesConfigurator): void
+    {
+        $servicesConfigurator->load(self::getModuleCode().'\\', __DIR__)
+            ->exclude([THELIA_MODULE_DIR . ucfirst(self::getModuleCode()). "/I18n/*"])
+            ->autowire(true)
+            ->autoconfigure(true);
     }
 }

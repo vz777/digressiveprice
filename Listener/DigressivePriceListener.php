@@ -17,6 +17,7 @@ use Thelia\Core\Event\Product\ProductEvent;
 use Thelia\Model\CartItem;
 use Thelia\Model\ProductPriceQuery;
 
+
 /**
  * Class CartAddListener
  * Manage actions when adding a product to a pack
@@ -37,6 +38,14 @@ class DigressivePriceListener extends BaseAction implements EventSubscriberInter
             'action.updateDigressivePrice' => [ "updateDigressivePrice", 128 ],
             'action.deleteDigressivePrice' => [ "deleteDigressivePrice", 128 ]
         ];
+    }
+    
+    /*I've added the itemAddedToCart function because I receveid "Attempted to call an undefined method named "itemAddedToCart" of class "DigressivePrice\Listener\DigressivePriceListener"
+    I find it strange that this function is not already defined*/
+
+    public function itemAddedToCart(CartEvent $event)
+    {
+        $this->updateCartItemPrice($event);
     }
 
     /**

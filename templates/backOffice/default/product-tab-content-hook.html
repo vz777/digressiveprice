@@ -7,15 +7,15 @@
             </div>
         </div>
     
-        {form name="digressiveprice.create"}
+        {form name="digressiveprice_create"}
             {if $form_error}<div class="alert alert-danger">{$form_error_message}</div>{/if}
         {/form}
     
-        {form name="digressiveprice.update"}
+        {form name="digressiveprice_update"}
             {if $form_error}<div class="alert alert-danger">{$form_error_message}</div>{/if}
         {/form}
     
-        {form name="digressiveprice.delete"}
+        {form name="digressiveprice_delete"}
             {if $form_error}<div class="alert alert-danger">{$form_error_message}</div>{/if}
         {/form}
         
@@ -34,7 +34,7 @@
                 {loop type="digressive" name="prodDigressivePrices" product_id={product attr="id"}}
                 <!-- Update digressive price -->
                 <tr>
-                    {form name="digressiveprice.update"}
+                    {form name="digressiveprice_update"}
                     <form action="{url path='/admin/module/DigressivePrice/update'}" class="form-inline" role="form" {form_enctype form=$form} method="post">
 
                         {form_hidden_fields form=$form}
@@ -90,7 +90,7 @@
 
                     <!-- Remove -->
                     <td>
-                        {form name="digressiveprice.delete"}
+                        {form name="digressiveprice_delete"}
                         <form action="{url path='/admin/module/DigressivePrice/delete'}" role="form" {form_enctype form=$form} method="post">
                             {form_hidden_fields form=$form}
 
@@ -113,7 +113,7 @@
 
                 <!-- New digressive price form -->
                 <tr>
-                    {form name="digressiveprice.create"}
+                    {form name="digressiveprice_create"}
                     <form action="{url path='/admin/module/DigressivePrice/create'}" class="form-inline" role="form" {form_enctype form=$form} method="post">
 
                         {form_hidden_fields form=$form}

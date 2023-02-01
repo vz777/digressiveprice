@@ -13,6 +13,12 @@ use DigressivePrice\Event\DigressivePriceIdEvent;
 use DigressivePrice\Form\CreateDigressivePriceForm;
 use DigressivePrice\Form\UpdateDigressivePriceForm;
 use DigressivePrice\Form\DeleteDigressivePriceForm;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
+
+use Thelia\Core\Event\TheliaEvents;
+use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\HttpFoundation\Request;
+
 
 /**
  * Class DigressivePriceController
@@ -23,11 +29,17 @@ use DigressivePrice\Form\DeleteDigressivePriceForm;
  */
 class DigressivePriceController extends BaseAdminController
 {
+    public function __construct(EventDispatcherInterface $eventDispatcher)
+    {
+        $this->eventDispatcher = $eventDispatcher;
+    }
     /**
      * @return mixed|\Symfony\Component\HttpFoundation\Response
      * @throws \Exception
+     *
+     * @Route("/admin/module/DigressivePrice/create", name="digressive_price_create")
      */
-    public function createAction()
+    public function createAction(Request $request, EventDispatcherInterface $eventDispatcher)
     {
         if (null !== $response = $this->checkAuth(AdminResources::MODULE, 'DigressivePrice', AccessManager::CREATE)) {
             return $response;
@@ -35,7 +47,8 @@ class DigressivePriceController extends BaseAdminController
 
         // Initialize vars
         $request = $this->getRequest();
-        $cdpf = new CreateDigressivePriceForm($request);
+        //$cdpf = new CreateDigressivePriceForm($request);
+        $cdpf = $this->createForm(CreateDigressivePriceForm::getName());
 
         try {
             $form = $this->validateForm($cdpf);
@@ -48,8 +61,20 @@ class DigressivePriceController extends BaseAdminController
                 $form->get('quantityFrom')->getData(),
                 $form->get('quantityTo')->getData()
             );
-            $this->dispatch('action.createDigressivePrice', $event);
-        } catch (\Exception $ex) {
+            //$this->dispatch('action.createDigressivePrice', $event);
+            $this->eventDispatcher->dispatch($event, 'action.createDigressivePrice');
+
+
+        } /*catch (\Exception $ex) {
+            $this->setupFormErrorContext(
+                //Translator::getInstance()->trans(
+                $this->getTranslator()->trans("Failed to create price slice", [], DigressivePrice::DOMAIN),
+                $this->createStandardFormValidationErrorMessage($ex),
+                $cdpf,
+                $ex
+            );
+        }*/
+        catch (FormValidationException $ex) {
             $this->setupFormErrorContext(
                 $this->getTranslator()->trans("Failed to create price slice", [], DigressivePrice::DOMAIN),
                 $this->createStandardFormValidationErrorMessage($ex),
@@ -62,6 +87,7 @@ class DigressivePriceController extends BaseAdminController
             'admin.products.update',
             array(
                 'product_id' => $this->getRequest()->get('product_id'),
+                //'product_id' => $request->getCurrentRequest()->request->get('product_id'),
                 'current_tab' => 'digressive-prices'
             )
         );
@@ -70,16 +96,21 @@ class DigressivePriceController extends BaseAdminController
     /**
      * @return mixed|\Symfony\Component\HttpFoundation\Response
      * @throws \Exception
+     *
+     * @Route("/admin/module/DigressivePrice/update", name="digressive_price_update")
      */
-    public function updateAction()
+    public function updateAction(EventDispatcherInterface $eventDispatcher)
     {
         if (null !== $response = $this->checkAuth(AdminResources::MODULE, 'DigressivePrice', AccessManager::UPDATE)) {
             return $response;
         }
 
         // Initialize vars
-        $request = $this->getRequest();
-        $udpf = new UpdateDigressivePriceForm($request);
+        //$request = $this->getRequest();
+        $request = $requestStack->getCurrentRequest();
+        //$udpf = new UpdateDigressivePriceForm($request);
+        $udpf = $this->createForm(UpdateDigressivePriceForm::getName());
+
 
         try {
             $form = $this->validateForm($udpf);
@@ -94,8 +125,11 @@ class DigressivePriceController extends BaseAdminController
                 $form->get('quantityTo')->getData()
             );
 
-            $this->dispatch('action.updateDigressivePrice', $event);
-        } catch (\Exception $ex) {
+            //$this->dispatch('action.updateDigressivePrice', $event);
+            $this->eventDispatcher->dispatch($event, 'action.updateDigressivePrice');
+        //} catch (\Exception $ex) {
+        } catch (FormValidationException $ex) {
+
             $this->setupFormErrorContext(
                 $this->getTranslator()->trans("Failed to update price slice", [], DigressivePrice::DOMAIN),
                 $this->createStandardFormValidationErrorMessage($ex),
@@ -107,7 +141,9 @@ class DigressivePriceController extends BaseAdminController
         return $this->generateRedirectFromRoute(
             'admin.products.update',
             array(
-                'product_id' => $this->getRequest()->get('product_id'),
+                //'product_id' => $this->getRequest()->get('product_id'),
+                'product_id' => $requestStack->getCurrentRequest()->request->get('product_id'),
+
                 'current_tab' => 'digressive-prices'
             )
         );
@@ -116,24 +152,34 @@ class DigressivePriceController extends BaseAdminController
     /**
      * @return mixed|\Symfony\Component\HttpFoundation\Response
      * @throws \Exception
+     *
+     * @Route("/admin/module/DigressivePrice/delete", name="digressive_price_delete")
      */
-    public function deleteAction()
+    public function deleteAction(RequestStack $requestStack, EventDispatcherInterface $eventDispatcher)
     {
         if (null !== $response = $this->checkAuth(AdminResources::MODULE, 'DigressivePrice', AccessManager::DELETE)) {
             return $response;
         }
 
         // Initialize vars
-        $request = $this->getRequest();
-        $ddpf = new DeleteDigressivePriceForm($request);
+        //$request = $this->getRequest();
+        $request = $requestStack->getCurrentRequest();
+
+        //$ddpf = new DeleteDigressivePriceForm($request);
+        $ddpf = $this->createForm(DeleteDigressivePriceForm::getName());
+
 
         try {
             $form = $this->validateForm($ddpf);
 
             // Dispatch delete
             $event = new DigressivePriceIdEvent($form->get('id')->getData());
-            $this->dispatch('action.deleteDigressivePrice', $event);
-        } catch (\Exception $ex) {
+            //$this->dispatch('action.deleteDigressivePrice', $event);
+            $this->eventDispatcher->dispatch($event, 'action.deleteDigressivePrice');
+
+        //} catch (\Exception $ex) {
+        } catch (FormValidationException $ex) {
+
             $this->setupFormErrorContext(
                 $this->getTranslator()->trans("Failed to delete price slice", [], DigressivePrice::DOMAIN),
                 $ex->getMessage(),
@@ -145,7 +191,8 @@ class DigressivePriceController extends BaseAdminController
         return $this->generateRedirectFromRoute(
             'admin.products.update',
             array(
-                'product_id' => $this->getRequest()->get('product_id'),
+                //'product_id' => $this->getRequest()->get('product_id'),
+                'product_id' => $requestStack->getCurrentRequest()->request->get('product_id'),
                 'current_tab' => 'digressive-prices'
             )
         );

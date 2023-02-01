@@ -2,8 +2,10 @@
 
 namespace DigressivePrice\Form;
 
+use Symfony\Component\Form\Extension\Core\Type\NumberType;
 use Symfony\Component\Validator\Constraints;
 use Symfony\Component\Validator\ExecutionContextInterface;
+
 
 /**
  * Class UpdateDigressivePriceForm
@@ -14,7 +16,7 @@ use Symfony\Component\Validator\ExecutionContextInterface;
  */
 class UpdateDigressivePriceForm extends CreateDigressivePriceForm
 {
-    public function getName()
+    public static function getName()
     {
         return "digressiveprice_update";
     }
@@ -24,10 +26,7 @@ class UpdateDigressivePriceForm extends CreateDigressivePriceForm
         parent::buildForm(true);
 
         $this->formBuilder
-        ->add(
-            "id",
-            "number",
-            array(
+        ->add( "id", NumberType::class, array(
                 "constraints" => array(
                     new Constraints\NotBlank()
                 ),
@@ -36,7 +35,7 @@ class UpdateDigressivePriceForm extends CreateDigressivePriceForm
         );
     }
 
-    public function fromNotInRange($value, ExecutionContextInterface $context, $isUpdating = true)
+    public function fromNotInRange($value, ExecutionContextInterface $context)
     {
         parent::fromNotInRange($value, $context, $isUpdating);
     }

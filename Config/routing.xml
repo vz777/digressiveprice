@@ -3,7 +3,7 @@
 <routes xmlns="http://symfony.com/schema/routing"
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:schemaLocation="http://symfony.com/schema/routing http://symfony.com/schema/routing/routing-1.0.xsd">
-
+<!--
     <route id="DigressivePrice.create" path="/admin/module/DigressivePrice/create">
         <default key="_controller">DigressivePrice\Controller\DigressivePriceController::createAction</default>
     </route>
@@ -14,5 +14,5 @@
 
     <route id="DigressivePrice.delete" path="/admin/module/DigressivePrice/delete">
         <default key="_controller">DigressivePrice\Controller\DigressivePriceController::deleteAction</default>
-    </route>
+    </route>-->
 </routes>

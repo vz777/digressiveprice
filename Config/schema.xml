@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<database defaultIdMethod="native" name="thelia" namespace="DigressivePrice\Model">
+<database defaultIdMethod="native" name="TheliaMain" namespace="DigressivePrice\Model">
     <table name="digressive_price">
         <column name="id" autoIncrement="true" primaryKey="true" required="true" type="INTEGER" />
         <column name="product_id" required="true" type="INTEGER" />

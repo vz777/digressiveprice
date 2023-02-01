@@ -1,3 +1,11 @@
+This version is an attempt to make it compatible for thelia 2.5 and is not fully functional
+
+TODO
+Rewriting of callback functions in form
+
+ATTENTION, for now, it is possible to enter overlapping ranges of values
+
+
 # DigressivePrice
 
 Easily create and manage range of quantities with associated prices.
